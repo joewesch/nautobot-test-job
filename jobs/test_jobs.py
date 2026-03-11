@@ -12,7 +12,9 @@ class RandomSleep(Job):
         description = "Randomly sleep an amount of seconds between 1 and 10 and then complete/"
 
     def run(self):
-        time.sleep(randint(1, 10))
+        rand_int = randint(1, 10)
+        self.logger.info(f"Sleeping {rand_int} seconds...")
+        time.sleep(rand_int)
         self.logger.info("Done")
 
 
