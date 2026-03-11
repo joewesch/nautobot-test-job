@@ -10,6 +10,7 @@ class RandomSleep(Job):
     class Meta:
         name = "Randomly sleep and end."
         description = "Randomly sleep an amount of seconds between 1 and 10 and then complete/"
+        has_sensitive_variables = False
 
     def run(self):
         rand_int = randint(1, 10)
