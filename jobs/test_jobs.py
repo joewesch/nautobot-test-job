@@ -1,7 +1,7 @@
 import time
 from random import randint
 
-from nautobot.apps.jobs import Job
+from nautobot.apps.jobs import Job, register_jobs
 
 name = "Test Jobs"
 
@@ -14,3 +14,6 @@ class RandomSleep(Job):
     def run(self):
         time.sleep(randint(1, 10))
         self.logger.info("Done")
+
+
+register_jobs(RandomSleep)
