@@ -14,9 +14,9 @@ class RandomSleep(Job):
 
     def run(self):
         rand_int = randint(1, 10)
-        self.logger.info(f"Sleeping {rand_int} seconds...")
+        self.logger.info(f"Raising a failure in {rand_int} seconds...")
         time.sleep(rand_int)
-        self.logger.info("Done")
+        raise ValueError("Kaboom!")
 
 
 register_jobs(RandomSleep)
