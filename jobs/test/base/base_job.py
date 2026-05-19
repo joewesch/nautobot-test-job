@@ -1,6 +1,7 @@
 import sys
 
 from nautobot.apps.jobs import Job
+from nautobot.core.celery import register_jobs
 
 from .dataclasses import Change
 from .services import ServiceA
@@ -18,6 +19,7 @@ class BaseJob(Job):
         super().__init_subclass__(**kwargs)
         if getattr(cls, "adapter_class", None) is None:
             raise ValueError(f"{cls.__name__} must set adapter_class")
+        register_jobs(cls)
 
     def _change_class_id(self):
         return id(Change)
