@@ -1,4 +1,5 @@
 from ..base.adapters import BaseAdapter
+from ..base.dataclasses import Change
 
 
 class AdapterB(BaseAdapter):
@@ -12,4 +13,7 @@ class AdapterB(BaseAdapter):
         ]
 
     def transform(self, record):
-        return {"action": record["verb"].lower(), "name": f"{self.name}:{record['label']}"}
+        return Change(action=record["verb"].lower(), name=f"{self.name}:{record['label']}")
+
+    def change_class_id(self):
+        return id(Change)

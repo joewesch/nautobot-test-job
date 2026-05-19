@@ -19,9 +19,20 @@ class BaseJob(Job):
         if getattr(cls, "adapter_class", None) is None:
             raise ValueError(f"{cls.__name__} must set adapter_class")
 
+    def _change_class_id(self):
+        return id(Change)
+
     def run(self):
         adapter = self.adapter_class()
         service = ServiceA(adapter, self.logger)
+
+        self.logger.info(
+            "Pre-sync Change-id snapshot: base_job=%s adapter=%s services=%s",
+            self._change_class_id(),
+            adapter.change_class_id(),
+            service.change_class_id(),
+        )
+
         result = service.sync()
 
         if not result.changes:

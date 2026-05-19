@@ -1,4 +1,5 @@
-from .dataclasses import Change, Result
+from .comparer import Comparator
+from .dataclasses import Change
 
 
 class ServiceA:
@@ -6,32 +7,30 @@ class ServiceA:
         self.adapter = adapter
         self.logger = logger
 
+    def change_class_id(self):
+        return id(Change)
+
     def sync(self):
         records = self.adapter.fetch()
-        changes = [Change(**self.adapter.transform(record)) for record in records]
-        result = Result(changes=changes)
+        changes = [self.adapter.transform(record) for record in records]
 
-        unfiltered = result.count()
-        filtered = result.count(data_type=Change)
-
-        self.logger.info(
-            "Service sync for adapter %s: unfiltered=%d filtered(data_type=Change)=%d",
-            self.adapter.name,
-            unfiltered,
-            filtered,
-        )
-        for action in ("create", "update", "delete"):
+        if changes:
+            sample = type(changes[0])
             self.logger.info(
-                "  count(action=%s)=%d count(action=%s, data_type=Change)=%d",
-                action,
-                result.count(action=action),
-                action,
-                result.count(action=action, data_type=Change),
+                "ServiceA built changes: type=%s id(type)=%s id(Change imported in services)=%s",
+                sample.__name__,
+                id(sample),
+                id(Change),
             )
 
-        if filtered != unfiltered:
-            self.logger.error("BUG REPRODUCED: isinstance() check dropped %d change(s).", unfiltered - filtered)
-        else:
-            self.logger.info("All good: isinstance() check held inside ServiceA.sync().")
+        comparator = Comparator(self.logger)
+        result = comparator.compare(changes)
+
+        self.logger.info(
+            "Change-id snapshot: adapter=%s services=%s comparator=%s",
+            self.adapter.change_class_id(),
+            self.change_class_id(),
+            comparator.change_class_id(),
+        )
 
         return result
