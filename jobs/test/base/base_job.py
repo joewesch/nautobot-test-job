@@ -22,6 +22,19 @@ class BaseJob(Job):
     def _change_class_id(self):
         return id(Change)
 
+    def _dump_change_classes_in_sys_modules(self):
+        seen = {}
+        for name, mod in list(sys.modules.items()):
+            change = getattr(mod, "Change", None)
+            if change is None or not isinstance(change, type):
+                continue
+            if getattr(change, "__name__", None) != "Change":
+                continue
+            seen.setdefault(id(change), []).append(name)
+        self.logger.info("Distinct Change class objects alive in sys.modules: %d", len(seen))
+        for cid, holders in seen.items():
+            self.logger.info("  Change id=%s held by %d module(s): %s", cid, len(holders), holders)
+
     def run(self):
         adapter = self.adapter_class()
         service = ServiceA(adapter, self.logger)
@@ -32,6 +45,8 @@ class BaseJob(Job):
             adapter.change_class_id(),
             service.change_class_id(),
         )
+
+        self._dump_change_classes_in_sys_modules()
 
         result = service.sync()
 
