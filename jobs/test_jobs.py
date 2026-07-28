@@ -1,3 +1,4 @@
+import json
 import time
 from random import randint
 
@@ -42,7 +43,7 @@ class JobHookReporter(JobHookReceiver):
 
         snapshots = change.get_snapshots()
         # self.logger.info("DIFF: %s", snapshots["differences"])
-        diff_text = DIFF_FORMAT.format(subject="DIFF", diff=snapshots["differences"])
+        diff_text = DIFF_FORMAT.format(subject="DIFF", diff=json.dumps(snapshots["differences"], indent=4))
         self.logger.info(diff_text)
 
         self.logger.info(f"Action: {action}")
