@@ -1,9 +1,22 @@
+import json
 import time
 from random import randint
 
 from nautobot.apps.jobs import Job, JobHookReceiver, register_jobs
 
 name = "Test Jobs"
+
+
+DIFF_FORMAT = """
+<details>\n
+    <summary>{subject}</summary>\n
+\n
+```\n
+{diff}
+```\n
+\n
+</details>\n
+"""
 
 
 class RandomSleep(Job):
@@ -29,7 +42,14 @@ class JobHookReporter(JobHookReceiver):
         self.logger.info(f"ObjectChange: {change}", extra={"object": changed_object})
 
         snapshots = change.get_snapshots()
-        self.logger.info("DIFF: %s", snapshots["differences"])
+        diff_text = DIFF_FORMAT.format(
+            subject="DIFF (Expand)",
+            diff=json.dumps(
+                snapshots["differences"],
+                indent=4,
+            ),
+        )
+        self.logger.info(diff_text)
 
         self.logger.info(f"Action: {action}")
 
