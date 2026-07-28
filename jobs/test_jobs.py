@@ -42,8 +42,13 @@ class JobHookReporter(JobHookReceiver):
         self.logger.info(f"ObjectChange: {change}", extra={"object": changed_object})
 
         snapshots = change.get_snapshots()
-        # self.logger.info("DIFF: %s", snapshots["differences"])
-        diff_text = DIFF_FORMAT.format(subject="DIFF", diff=json.dumps(snapshots["differences"], indent=4))
+        diff_text = DIFF_FORMAT.format(
+            subject="DIFF (Expand)",
+            diff=json.dumps(
+                snapshots["differences"],
+                indent=4,
+            ),
+        )
         self.logger.info(diff_text)
 
         self.logger.info(f"Action: {action}")
